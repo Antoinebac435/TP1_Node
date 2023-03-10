@@ -1,10 +1,42 @@
 const express = require('express')
 const app = express()
-const port = 3100
+const port = 3000
+
+
+
+const metrics = {
+    requestsCount: {},
+    startTime: Date.now()
+  };
+  
+ 
+app.use((req, res, next) => {
+    const path = req.path;
+    metrics.requestsCount[path] = (metrics.requestsCount[path] || 0) + 1;
+    next();
+  });
+  
+  
+app.get('/metrics', (req, res) => {
+    const uptime = Math.floor((Date.now() - metrics.startTime) / 1000);
+    const response = {
+      status: 'healthy',
+      requestsCount: metrics.requestsCount,
+      uptime: uptime
+    };
+    res.json(response);
+  });
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
+
+app.use((req, res, next) => {
+    const now = new Date();
+    console.log(`[${now.toLocaleString()}] ${req.method} ${req.url}`);
+    next();
+  });
 
 app.get('/welcome', (req, res) => {
     res.send('Bienvenue sur le TP 1 du cours d\'architecture logicielle');
@@ -46,7 +78,10 @@ app.get('/somme', (req, res) => {
     res.send(`Le résultat de la somme est : ${resultat}`);
   });
 
-app.use 
+app.use((req, res) => {
+    res.status(404).send("Cette page n'existe pas !");
+  });
+
   
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)

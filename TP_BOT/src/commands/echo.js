@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder, Integration } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('echo')
-        .setDescription('Répète le message que vous avez envoyé.')
+        .setDescription('Répète le même message ! ')
         .addStringOption(option =>
-            option.setName('input')
-                .setDescription('Le message à répéter.')
-                .setRequired(true)),
+            option.setName('phrase')
+            .setDescription("La phrase à répeter :")
+            .setRequired(true)
+        ),
     async execute(interaction) {
-        const input = interaction.options.getString('input')
-        await interaction.reply(input)
+        await interaction.reply(interaction.options.getString('phrase'))
     },
 }

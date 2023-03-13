@@ -1,18 +1,18 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, Integration , EmbedBuilder  } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('user')
-        .setDescription('Renvoie des informations sur l\'utilisateur mentionné.')
-        .addUserOption((option) =>
-            option
-                .setName('cible')
-                .setDescription('L\'utilisateur dont vous voulez les informations.')
-                .setRequired(false),
-        ),
-        async execute(interaction) {
-            const user = interaction.options.getUser('cible') || interaction.member.user;
-            const date = new Date(user.createdAt);
-            await interaction.reply(`Nom d'utilisateur: ${user.username}\nA rejoint le serveur le: ${date}`);
-        },
-};
+        .setDescription('Info à propos du serveur'),
+    async execute(interaction) {
+        const Embed = new EmbedBuilder()
+            .setColor(0x0099FF)
+            .setTitle('Information sur l utilisateur')
+            .addFields(
+                {name : "Nom du serveur : ",value:`${interaction.user.tag}`,inline:true},
+                {name : "Date d'arrivée sur le serveur " ,value: ` ${interaction.member.joinedAt}`,inline:true}
+            )
+        await interaction.reply({embeds:[Embed]})
+
+    },
+}

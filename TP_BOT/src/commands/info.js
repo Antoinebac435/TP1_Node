@@ -1,32 +1,33 @@
-const { SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder, Integration , EmbedBuilder  } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
-        .setDescription('Renvoie des informations sur l\'utilisateur mentionné ou le serveur.')
+        .setDescription('Répète le même message ! ')
+        
         .addSubcommand(subcommand =>
             subcommand
                 .setName('user')
-                .setDescription('Renvoie des informations sur l\'utilisateur mentionné.')
-                .addUserOption((option) =>
-                    option
-                        .setName('cible')
-                        .setDescription('L\'utilisateur dont vous voulez les informations.')
-                        .setRequired(false),
-                ))
+                .setDescription('Informations sur l\'utilisateur')
+                .addUserOption(option => option.setName('target').setDescription('Le nom d\'utilisateur')))
         .addSubcommand(subcommand =>
             subcommand
                 .setName('server')
-                .setDescription('Renvoie le nom du serveur et le nombre de membres.')),
+                .setDescription('Informations sur le serveur')),
+
     async execute(interaction) {
-        const subcommand = interaction.options.getSubcommand();
-        if (subcommand === 'user') {
-            const user = interaction.options.getUser('cible') || interaction.member.user;
-            const date = new Date(user.createdAt);
-            await interaction.reply(`Nom d'utilisateur: ${user.username}\nA rejoint le serveur le: ${date}`);
-        } else if (subcommand === 'server') {
-            await interaction.reply(
-                `Nom du serveur: ${interaction.guild.name}\nNombre de membres: ${interaction.guild.memberCount}`);
+
+        if (interaction.options.getSubcommand() === 'user') {
+            let user = interaction.options.getUser('target');
+            if (user) {
+                await interaction.reply('**Nom d\'utilisateur :** '+ user.username+'\n**Sa date d\'arrivée :** '+ user.joinedAt);
+            } else {
+                await interaction.reply('**Nom d\'utilisateur :** '+interaction.user.username+'\n**Sa date d\'arrivée :** '+ interaction.member.joinedAt);
+            }
         }
+        else{
+            await interaction.reply('**Nom du serveur : ** '+ interaction.guild.name + `\n** Nombre d'utilisateur : ** ${interaction.guild.members.cache.filter(member => !member.user.bot).size}`);
+        }
+
     }
 }
